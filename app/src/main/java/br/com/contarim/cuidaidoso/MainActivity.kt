@@ -11,10 +11,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import br.com.contarim.cuidaidoso.ui.theme.CuidaIdosoTheme
 
+// Configuração de destino para navegação segura
 enum class Destino { BoasVindas, AuthOpcoes, Login, Registro, AppPrincipal }
 
 class MainActivity : ComponentActivity() {
     companion object {
+        // Persistência em memória dos usuários cadastrados
         val listaUsuariosGlobal = mutableStateListOf<Usuario>()
     }
 
@@ -33,6 +35,7 @@ fun MainContent() {
     val listaMed = remember { mutableStateListOf<Medicamento>() }
     val listaContatos = remember { mutableStateListOf<ContatoEmergencia>() }
     val listaHistorico = remember { mutableStateListOf<HistoricoEvento>() }
+    val listaConsultas = remember { mutableStateListOf<Consulta>() }
 
     var usuarioLogado by remember { mutableStateOf<Usuario?>(null) }
     var telaAtual by remember { mutableStateOf(Destino.BoasVindas) }
@@ -61,6 +64,7 @@ fun MainContent() {
                     listaMed = listaMed,
                     listaContatos = listaContatos,
                     listaHistorico = listaHistorico,
+                    listaConsultas = listaConsultas,
                     usuario = user,
                     onLogout = {
                         usuarioLogado = null
@@ -75,16 +79,15 @@ fun MainContent() {
 
 @Composable
 fun AppScaffold(
-    selectedTab: Int,
-    onTabSelected: (Int) -> Unit,
+    selectedTab: Int, onTabSelected: (Int) -> Unit,
     listaMed: MutableList<Medicamento>,
     listaContatos: MutableList<ContatoEmergencia>,
     listaHistorico: MutableList<HistoricoEvento>,
-    usuario: Usuario,
-    onLogout: () -> Unit
+    listaConsultas: MutableList<Consulta>,
+    usuario: Usuario, onLogout: () -> Unit
 ) {
-    val items = listOf("Remédios", "Contatos", "Histórico", "Conta")
-    val icons = listOf(Icons.Default.Medication, Icons.Default.PhoneCallback, Icons.Default.Timeline, Icons.Default.Person)
+    val items = listOf("Remédios", "Agenda", "Contatos", "Histórico", "Conta")
+    val icons = listOf(Icons.Default.Medication, Icons.Default.Event, Icons.Default.PhoneCallback, Icons.Default.Timeline, Icons.Default.Person)
 
     Scaffold(
         bottomBar = {
@@ -103,9 +106,10 @@ fun AppScaffold(
         Box(modifier = Modifier.padding(padding)) {
             when (selectedTab) {
                 0 -> ListaMedicamentosScreen(listaMed, listaHistorico)
-                1 -> ContatosEmergenciaScreen(listaContatos)
-                2 -> HistoricoTimelineScreen(listaHistorico)
-                3 -> PerfilUsuarioScreen(usuario, onLogout)
+                1 -> AgendaConsultasScreen(listaConsultas, listaHistorico)
+                2 -> ContatosEmergenciaScreen(listaContatos, listaHistorico)
+                3 -> HistoricoTimelineScreen(listaHistorico)
+                4 -> PerfilUsuarioScreen(usuario, onLogout)
             }
         }
     }
