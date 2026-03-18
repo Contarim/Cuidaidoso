@@ -14,8 +14,15 @@ class NotificacaoReceiver : BroadcastReceiver() {
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val channelId = "cuidaidoso_alerts"
 
+        // Removida a verificação redundante de versão, mantendo apenas a necessária para o Canal
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(channelId, "Alertas de Saúde", NotificationManager.IMPORTANCE_HIGH)
+            val channel = NotificationChannel(
+                channelId,
+                "Alertas de Saúde",
+                NotificationManager.IMPORTANCE_HIGH
+            ).apply {
+                description = "Lembretes de medicamentos e consultas"
+            }
             notificationManager.createNotificationChannel(channel)
         }
 
@@ -24,6 +31,7 @@ class NotificacaoReceiver : BroadcastReceiver() {
             .setContentTitle(titulo)
             .setStyle(NotificationCompat.BigTextStyle().bigText(mensagem))
             .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setCategory(NotificationCompat.CATEGORY_REMINDER)
             .setAutoCancel(true)
             .build()
 
@@ -31,37 +39,54 @@ class NotificacaoReceiver : BroadcastReceiver() {
     }
 }
 
-// Função para agendar a notificação real no horário
 fun agendarNotificacaoMedicamento(context: Context, medicamento: Medicamento) {
-    val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-    val intent = Intent(context, NotificacaoReceiver::class.java).apply {
-        putExtra("titulo", "Hora do Remédio")
-        putExtra("mensagem", "Tomar ${medicamento.nome} (${medicamento.dosagem})")
-    }
+    try {
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent = Intent(context, NotificacaoReceiver::class.java).apply {
+            putExtra("titulo", "Hora do Remédio")
+            putExtra("mensagem", "Tomar ${medicamento.nome} (${medicamento.dosagem})")
+        }
 
-    val pendingIntent = PendingIntent.getBroadcast(
-        context, medicamento.hashCode(), intent,
-        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-    )
+        val pendingIntent = PendingIntent.getBroadcast(
+            context,
+            medicamento.hashCode(),
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
 
-    val partesHora = medicamento.horario.split(":")
-    if (partesHora.size == 2) {
-        val calendar = Calendar.getInstance().apply {
-            set(Calendar.HOUR_OF_DAY, partesHora[0].toInt())
-            set(Calendar.MINUTE, partesHora[1].toInt())
-            set(Calendar.SECOND, 0)
-            if (before(Calendar.getInstance())) {
-                add(Calendar.DATE, 1) // Se a hora já passou, agenda para amanhã
+        val partesHora = medicamento.horario.split(":")
+        if (partesHora.size == 2) {
+            val hora = partesHora[0].toInt()
+            val minuto = partesHora[1].toInt()
+
+            val calendar = Calendar.getInstance().apply {
+                set(Calendar.HOUR_OF_DAY, hora)
+                set(Calendar.MINUTE, minuto)
+                set(Calendar.SECOND, 0)
+
+                if (before(Calendar.getInstance())) {
+                    add(Calendar.DATE, 1)
+                }
+            }
+
+            if (medicamento.isRecorrente) {
+                alarmManager.setRepeating(
+                    AlarmManager.RTC_WAKEUP,
+                    calendar.timeInMillis,
+                    AlarmManager.INTERVAL_DAY,
+                    pendingIntent
+                )
+            } else {
+                // Removida a checagem desnecessária de SDK_INT >= 28
+                alarmManager.setExactAndAllowWhileIdle(
+                    AlarmManager.RTC_WAKEUP,
+                    calendar.timeInMillis,
+                    pendingIntent
+                )
             }
         }
-
-        if (medicamento.isRecorrente) {
-            // Repete todos os dias
-            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, AlarmManager.INTERVAL_DAY, pendingIntent)
-        } else {
-            // Dispara apenas uma vez
-            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
-        }
+    } catch (e: Exception) {
+        e.printStackTrace()
     }
 }
 

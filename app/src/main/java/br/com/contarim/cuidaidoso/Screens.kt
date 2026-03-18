@@ -154,13 +154,31 @@ fun ListaMedicamentosScreen(lista: MutableList<Medicamento>, historico: MutableL
             text = {
                 Column {
                     OutlinedTextField(nomeMed, { nomeMed = it }, label = { Text("Nome do Remédio") })
-                    OutlinedTextField(horaFieldValue, { input ->
-                        val d = input.text.filter { it.isDigit() }
-                        if (d.length <= 4) {
-                            val fmt = if (d.length >= 3) d.substring(0, 2) + ":" + d.substring(2) else d
-                            horaFieldValue = TextFieldValue(fmt, TextRange(fmt.length))
-                        }
-                    }, label = { Text("Hora (HH:mm)") }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number))
+
+                    // MÁSCARA E VALIDAÇÃO DE HORA
+                    OutlinedTextField(
+                        value = horaFieldValue,
+                        onValueChange = { input ->
+                            val d = input.text.filter { it.isDigit() }
+                            if (d.length <= 4) {
+                                var finalStr = d
+                                if (d.length >= 2) {
+                                    val h = d.substring(0, 2).toIntOrNull() ?: 0
+                                    val hVal = if (h > 23) "23" else d.substring(0, 2)
+                                    finalStr = hVal + d.substring(2)
+                                }
+                                if (d.length == 4) {
+                                    val m = d.substring(2, 4).toIntOrNull() ?: 0
+                                    if (m > 59) finalStr = finalStr.substring(0, 2) + "59"
+                                }
+                                val fmt = if (finalStr.length >= 3) finalStr.substring(0, 2) + ":" + finalStr.substring(2) else finalStr
+                                horaFieldValue = TextFieldValue(fmt, TextRange(fmt.length))
+                            }
+                        },
+                        label = { Text("Hora (HH:mm)") },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                    )
+
                     OutlinedTextField(doseMed, { doseMed = it }, label = { Text("Dose") })
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Checkbox(isRecorrente, { isRecorrente = it })
@@ -214,20 +232,54 @@ fun AgendaConsultasScreen(lista: MutableList<Consulta>, historico: MutableList<H
                         RadioButton(tipo == "Exame", { tipo = "Exame" }); Text("Exame")
                     }
                     OutlinedTextField(espec, { espec = it }, label = { Text("Especialidade (Ex: Geriatra)") })
-                    OutlinedTextField(dataVal, { input ->
-                        val d = input.text.filter { it.isDigit() }
-                        if (d.length <= 4) {
-                            val fmt = if (d.length >= 3) d.substring(0, 2) + "/" + d.substring(2) else d
-                            dataVal = TextFieldValue(fmt, TextRange(fmt.length))
-                        }
-                    }, label = { Text("Data (DD/MM)") }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number))
-                    OutlinedTextField(horaVal, { input ->
-                        val d = input.text.filter { it.isDigit() }
-                        if (d.length <= 4) {
-                            val fmt = if (d.length >= 3) d.substring(0, 2) + ":" + d.substring(2) else d
-                            horaVal = TextFieldValue(fmt, TextRange(fmt.length))
-                        }
-                    }, label = { Text("Hora (HH:mm)") }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number))
+
+                    // MÁSCARA E VALIDAÇÃO DE DATA
+                    OutlinedTextField(
+                        value = dataVal,
+                        onValueChange = { input ->
+                            val d = input.text.filter { it.isDigit() }
+                            if (d.length <= 4) {
+                                var finalStr = d
+                                if (d.length >= 2) {
+                                    val dia = d.substring(0, 2).toIntOrNull() ?: 0
+                                    val diaVal = if (dia > 31) "31" else d.substring(0, 2)
+                                    finalStr = diaVal + d.substring(2)
+                                }
+                                if (d.length == 4) {
+                                    val mes = d.substring(2, 4).toIntOrNull() ?: 0
+                                    if (mes > 12) finalStr = finalStr.substring(0, 2) + "12"
+                                }
+                                val fmt = if (finalStr.length >= 3) finalStr.substring(0, 2) + "/" + finalStr.substring(2) else finalStr
+                                dataVal = TextFieldValue(fmt, TextRange(fmt.length))
+                            }
+                        },
+                        label = { Text("Data (DD/MM)") },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                    )
+
+                    // MÁSCARA E VALIDAÇÃO DE HORA
+                    OutlinedTextField(
+                        value = horaVal,
+                        onValueChange = { input ->
+                            val d = input.text.filter { it.isDigit() }
+                            if (d.length <= 4) {
+                                var finalStr = d
+                                if (d.length >= 2) {
+                                    val h = d.substring(0, 2).toIntOrNull() ?: 0
+                                    val hVal = if (h > 23) "23" else d.substring(0, 2)
+                                    finalStr = hVal + d.substring(2)
+                                }
+                                if (d.length == 4) {
+                                    val m = d.substring(2, 4).toIntOrNull() ?: 0
+                                    if (m > 59) finalStr = finalStr.substring(0, 2) + "59"
+                                }
+                                val fmt = if (finalStr.length >= 3) finalStr.substring(0, 2) + ":" + finalStr.substring(2) else finalStr
+                                horaVal = TextFieldValue(fmt, TextRange(fmt.length))
+                            }
+                        },
+                        label = { Text("Hora (HH:mm)") },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                    )
                 }
             }
         )
@@ -238,7 +290,7 @@ fun AgendaConsultasScreen(lista: MutableList<Consulta>, historico: MutableList<H
 fun ContatosEmergenciaScreen(lista: MutableList<ContatoEmergencia>, historico: MutableList<HistoricoEvento>) {
     var showDialog by remember { mutableStateOf(false) }
     var nome by remember { mutableStateOf("") }
-    var telVal by remember { mutableStateOf(TextFieldValue("")) } // Usando TextFieldValue para máscara
+    var telVal by remember { mutableStateOf(TextFieldValue("")) }
     var parent by remember { mutableStateOf("") }
 
     Column(Modifier.fillMaxSize().padding(16.dp)) {
@@ -271,8 +323,6 @@ fun ContatosEmergenciaScreen(lista: MutableList<ContatoEmergencia>, historico: M
             text = {
                 Column {
                     OutlinedTextField(nome, { nome = it }, label = { Text("Nome Completo") })
-
-                    // MÁSCARA DE TELEFONE: (XX) XXXXX-XXXX
                     OutlinedTextField(
                         value = telVal,
                         onValueChange = { input ->
@@ -291,7 +341,6 @@ fun ContatosEmergenciaScreen(lista: MutableList<ContatoEmergencia>, historico: M
                         label = { Text("Telefone (DDD + Número)") },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
                     )
-
                     OutlinedTextField(parent, { parent = it }, label = { Text("Parentesco (Ex: Avo)") })
                 }
             }
