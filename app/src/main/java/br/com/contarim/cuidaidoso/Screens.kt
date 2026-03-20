@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -33,7 +34,10 @@ fun LogoApp(tamanho: Dp = 150.dp) {
     Image(
         painter = painterResource(id = R.drawable.idoso),
         contentDescription = "Logo",
-        modifier = Modifier.size(tamanho).clip(CircleShape).border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
+        modifier = Modifier
+            .size(tamanho)
+            .clip(CircleShape)
+            .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
     )
 }
 
@@ -41,13 +45,25 @@ fun LogoApp(tamanho: Dp = 150.dp) {
 
 @Composable
 fun WelcomeScreen(onContinue: () -> Unit) {
-    Column(modifier = Modifier.fillMaxSize().padding(24.dp), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         LogoApp(200.dp)
         Spacer(Modifier.height(32.dp))
         Text("CuidaIdoso", style = MaterialTheme.typography.displaySmall, fontWeight = FontWeight.Bold)
         Text("Sua família em boas mãos.", color = Color.Gray)
         Spacer(Modifier.height(48.dp))
-        Button(onClick = onContinue, modifier = Modifier.fillMaxWidth().height(56.dp), shape = RoundedCornerShape(16.dp)) {
+        Button(
+            onClick = onContinue,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp),
+            shape = RoundedCornerShape(16.dp)
+        ) {
             Text("INICIAR", fontWeight = FontWeight.Bold, fontSize = 18.sp)
         }
     }
@@ -55,14 +71,24 @@ fun WelcomeScreen(onContinue: () -> Unit) {
 
 @Composable
 fun AuthScreen(onLoginClick: () -> Unit, onRegisterClick: () -> Unit) {
-    Column(modifier = Modifier.fillMaxSize().padding(24.dp), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         LogoApp(130.dp)
         Spacer(Modifier.height(40.dp))
         Text("Bem-vindo!", style = MaterialTheme.typography.headlineLarge, fontWeight = FontWeight.Bold)
         Spacer(Modifier.height(40.dp))
-        Button(onClick = onLoginClick, modifier = Modifier.fillMaxWidth().height(56.dp), shape = RoundedCornerShape(16.dp)) { Text("ENTRAR") }
+        Button(onClick = onLoginClick, modifier = Modifier
+            .fillMaxWidth()
+            .height(56.dp), shape = RoundedCornerShape(16.dp)) { Text("ENTRAR") }
         Spacer(Modifier.height(16.dp))
-        OutlinedButton(onClick = onRegisterClick, modifier = Modifier.fillMaxWidth().height(56.dp), shape = RoundedCornerShape(16.dp)) { Text("CADASTRAR") }
+        OutlinedButton(onClick = onRegisterClick, modifier = Modifier
+            .fillMaxWidth()
+            .height(56.dp), shape = RoundedCornerShape(16.dp)) { Text("CADASTRAR") }
     }
 }
 
@@ -72,7 +98,13 @@ fun LoginScreen(usuarios: List<Usuario>, onBack: () -> Unit, onLoginSuccess: (Us
     var senha by remember { mutableStateOf("") }
     var erro by remember { mutableStateOf(false) }
 
-    Column(modifier = Modifier.fillMaxSize().padding(24.dp), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         LogoApp(100.dp)
         Spacer(Modifier.height(24.dp))
         OutlinedTextField(email, { email = it }, label = { Text("E-mail") }, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(12.dp))
@@ -81,8 +113,17 @@ fun LoginScreen(usuarios: List<Usuario>, onBack: () -> Unit, onLoginSuccess: (Us
         Button({
             val user = usuarios.find { it.email.trim().lowercase() == email.trim().lowercase() && it.senha == senha }
             if (user != null) onLoginSuccess(user) else erro = true
-        }, Modifier.fillMaxWidth().padding(top = 24.dp).height(56.dp), shape = RoundedCornerShape(16.dp)) { Text("ENTRAR") }
-        TextButton(onBack) { Text("Voltar") }
+        }, Modifier
+            .fillMaxWidth()
+            .padding(top = 24.dp)
+            .height(56.dp), shape = RoundedCornerShape(16.dp)) { Text("ENTRAR") }
+        TextButton(onBack) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
+                Spacer(Modifier.width(8.dp))
+                Text("Voltar")
+            }
+        }
     }
 }
 
@@ -91,7 +132,13 @@ fun RegistroScreen(onBack: () -> Unit, onRegisterSuccess: (Usuario) -> Unit) {
     var nome by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var senha by remember { mutableStateOf("") }
-    Column(modifier = Modifier.fillMaxSize().padding(24.dp).verticalScroll(rememberScrollState()), horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp)
+            .verticalScroll(rememberScrollState()),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         LogoApp(100.dp)
         Spacer(Modifier.height(24.dp))
         Text("Crie sua Conta", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
@@ -99,24 +146,45 @@ fun RegistroScreen(onBack: () -> Unit, onRegisterSuccess: (Usuario) -> Unit) {
         OutlinedTextField(nome, { nome = it }, label = { Text("Nome Completo") }, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(12.dp))
         OutlinedTextField(email, { email = it }, label = { Text("E-mail") }, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(12.dp))
         OutlinedTextField(senha, { senha = it }, label = { Text("Senha") }, visualTransformation = PasswordVisualTransformation(), modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(12.dp))
-        Button({ if(email.isNotBlank() && senha.isNotBlank()) onRegisterSuccess(Usuario(nome, email, "0", senha)) }, Modifier.fillMaxWidth().padding(top = 24.dp).height(56.dp), shape = RoundedCornerShape(16.dp)) { Text("CADASTRAR") }
+        Button({ if(email.isNotBlank() && senha.isNotBlank()) onRegisterSuccess(Usuario(nome, email, "0", senha)) }, Modifier
+            .fillMaxWidth()
+            .padding(top = 24.dp)
+            .height(56.dp), shape = RoundedCornerShape(16.dp)) { Text("CADASTRAR") }
         TextButton(onBack) { Text("Voltar") }
     }
 }
+
+// --- TELAS PRINCIPAIS ---
 
 @Composable
 fun ListaMedicamentosScreen(lista: MutableList<Medicamento>, historico: MutableList<HistoricoEvento>) {
     val context = LocalContext.current
     var showDialog by remember { mutableStateOf(false) }
+    var editandoMed by remember { mutableStateOf<Medicamento?>(null) }
+
     var nomeMed by remember { mutableStateOf("") }
     var doseMed by remember { mutableStateOf("") }
     var horaFieldValue by remember { mutableStateOf(TextFieldValue("")) }
     var isRecorrente by remember { mutableStateOf(false) }
 
+    // Reset ou preenchimento de campos ao abrir diálogo
+    LaunchedEffect(showDialog) {
+        if (showDialog) {
+            nomeMed = editandoMed?.nome ?: ""
+            doseMed = editandoMed?.dosagem ?: ""
+            val h = editandoMed?.horario ?: ""
+            horaFieldValue = TextFieldValue(h, TextRange(h.length))
+            isRecorrente = editandoMed?.isRecorrente ?: false
+        }
+    }
+
     Column(Modifier.fillMaxSize().padding(16.dp)) {
         Text("Medicamentos", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
         Row(Modifier.fillMaxWidth().padding(vertical = 16.dp), Arrangement.spacedBy(8.dp)) {
-            Button({ showDialog = true }, Modifier.weight(1f).height(50.dp), shape = RoundedCornerShape(12.dp)) { Text("ADICIONAR") }
+            Button({
+                editandoMed = null
+                showDialog = true
+            }, Modifier.weight(1f).height(50.dp), shape = RoundedCornerShape(12.dp)) { Text("ADICIONAR") }
             OutlinedButton(onClick = {
                 if (lista.isEmpty()) {
                     dispararNotificacaoImediata(context, "Atenção", "Nenhum remédio cadastrado.")
@@ -133,29 +201,49 @@ fun ListaMedicamentosScreen(lista: MutableList<Medicamento>, historico: MutableL
                     ListItem(
                         headlineContent = { Text(med.nome, fontWeight = FontWeight.Bold) },
                         supportingContent = { Text("${med.dosagem} às ${med.horario}${if(med.isRecorrente) " (Diário)" else ""}") },
-                        trailingContent = { IconButton({
-                            lista.remove(med)
-                            historico.add(0, HistoricoEvento("Removido: ${med.nome}", obterDataHoraAtual(), Icons.Default.DeleteForever))
-                        }) { Icon(Icons.Default.Delete, null, tint = Color.Red) } }
+                        trailingContent = {
+                            Row {
+                                IconButton({
+                                    editandoMed = med
+                                    showDialog = true
+                                }) { Icon(Icons.Default.Edit, "Editar", tint = MaterialTheme.colorScheme.primary) }
+                                IconButton({
+                                    lista.remove(med)
+                                    historico.add(0, HistoricoEvento("Removido: ${med.nome}", obterDataHoraAtual(), Icons.Default.DeleteForever))
+                                }) { Icon(Icons.Default.Delete, "Excluir", tint = Color.Red) }
+                            }
+                        }
                     )
                 }
             }
         }
     }
+
     if (showDialog) {
-        AlertDialog(onDismissRequest = { showDialog = false },
-            confirmButton = { Button({
-                if (nomeMed.isNotEmpty()) {
-                    lista.add(Medicamento(nomeMed, horaFieldValue.text, doseMed, isRecorrente))
-                    historico.add(0, HistoricoEvento("Adicionado: $nomeMed", obterDataHoraAtual(), Icons.Default.AddCircle))
-                    showDialog = false; nomeMed = ""; doseMed = ""; horaFieldValue = TextFieldValue(""); isRecorrente = false
-                }
-            }) { Text("Salvar") } },
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            confirmButton = {
+                Button({
+                    if (nomeMed.isNotEmpty()) {
+                        val novoMed = Medicamento(nomeMed, horaFieldValue.text, doseMed, isRecorrente)
+                        if (editandoMed != null) {
+                            val index = lista.indexOf(editandoMed)
+                            if (index != -1) lista[index] = novoMed
+                            historico.add(0, HistoricoEvento("Editado: $nomeMed", obterDataHoraAtual(), Icons.Default.EditNote))
+                        } else {
+                            lista.add(novoMed)
+                            historico.add(0, HistoricoEvento("Adicionado: $nomeMed", obterDataHoraAtual(), Icons.Default.AddCircle))
+                        }
+                        agendarNotificacaoMedicamento(context, novoMed)
+                        showDialog = false
+                    }
+                }) { Text("Salvar") }
+            },
+            dismissButton = { TextButton({ showDialog = false }) { Text("Cancelar") } },
+            title = { Text(if (editandoMed == null) "Novo Medicamento" else "Editar Medicamento") },
             text = {
                 Column {
-                    OutlinedTextField(nomeMed, { nomeMed = it }, label = { Text("Nome do Remédio") })
-
-                    // MÁSCARA E VALIDAÇÃO DE HORA
+                    OutlinedTextField(nomeMed, { nomeMed = it }, label = { Text("Nome do Remédio") }, modifier = Modifier.fillMaxWidth())
                     OutlinedTextField(
                         value = horaFieldValue,
                         onValueChange = { input ->
@@ -176,10 +264,10 @@ fun ListaMedicamentosScreen(lista: MutableList<Medicamento>, historico: MutableL
                             }
                         },
                         label = { Text("Hora (HH:mm)") },
+                        modifier = Modifier.fillMaxWidth(),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                     )
-
-                    OutlinedTextField(doseMed, { doseMed = it }, label = { Text("Dose") })
+                    OutlinedTextField(doseMed, { doseMed = it }, label = { Text("Dose") }, modifier = Modifier.fillMaxWidth())
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Checkbox(isRecorrente, { isRecorrente = it })
                         Text("Uso recorrente")
@@ -193,47 +281,81 @@ fun ListaMedicamentosScreen(lista: MutableList<Medicamento>, historico: MutableL
 @Composable
 fun AgendaConsultasScreen(lista: MutableList<Consulta>, historico: MutableList<HistoricoEvento>) {
     var showDialog by remember { mutableStateOf(false) }
+    var editandoConsulta by remember { mutableStateOf<Consulta?>(null) }
+
     var tipo by remember { mutableStateOf("Consulta") }
     var espec by remember { mutableStateOf("") }
     var dataVal by remember { mutableStateOf(TextFieldValue("")) }
     var horaVal by remember { mutableStateOf(TextFieldValue("")) }
 
+    LaunchedEffect(showDialog) {
+        if (showDialog) {
+            tipo = editandoConsulta?.tipo ?: "Consulta"
+            espec = editandoConsulta?.especialidade ?: ""
+            val d = editandoConsulta?.data ?: ""
+            val h = editandoConsulta?.hora ?: ""
+            dataVal = TextFieldValue(d, TextRange(d.length))
+            horaVal = TextFieldValue(h, TextRange(h.length))
+        }
+    }
+
     Column(Modifier.fillMaxSize().padding(16.dp)) {
         Text("Agenda", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
-        Button({ showDialog = true }, Modifier.fillMaxWidth().padding(vertical = 16.dp).height(50.dp), shape = RoundedCornerShape(12.dp)) { Text("MARCAR") }
+        Button({
+            editandoConsulta = null
+            showDialog = true
+        }, Modifier.fillMaxWidth().padding(vertical = 16.dp).height(50.dp), shape = RoundedCornerShape(12.dp)) { Text("MARCAR NOVO") }
         LazyColumn {
             items(lista) { item ->
                 Card(Modifier.fillMaxWidth().padding(vertical = 4.dp), shape = RoundedCornerShape(12.dp)) {
                     ListItem(
                         headlineContent = { Text(item.especialidade, fontWeight = FontWeight.Bold) },
                         supportingContent = { Text("${item.tipo} - ${item.data} às ${item.hora}") },
-                        trailingContent = { IconButton({
-                            lista.remove(item)
-                            historico.add(0, HistoricoEvento("Cancelado: ${item.especialidade}", obterDataHoraAtual(), Icons.Default.EventBusy))
-                        }) { Icon(Icons.Default.Delete, null) } }
+                        trailingContent = {
+                            Row {
+                                IconButton({
+                                    editandoConsulta = item
+                                    showDialog = true
+                                }) { Icon(Icons.Default.Edit, "Editar", tint = MaterialTheme.colorScheme.primary) }
+                                IconButton({
+                                    lista.remove(item)
+                                    historico.add(0, HistoricoEvento("Cancelado: ${item.especialidade}", obterDataHoraAtual(), Icons.Default.EventBusy))
+                                }) { Icon(Icons.Default.Delete, "Excluir") }
+                            }
+                        }
                     )
                 }
             }
         }
     }
+
     if (showDialog) {
-        AlertDialog(onDismissRequest = { showDialog = false },
-            confirmButton = { Button({
-                if (espec.isNotEmpty()) {
-                    lista.add(Consulta(tipo, espec, dataVal.text, horaVal.text))
-                    historico.add(0, HistoricoEvento("Agendado: $espec", obterDataHoraAtual(), Icons.Default.EventAvailable))
-                    showDialog = false; espec = ""; dataVal = TextFieldValue(""); horaVal = TextFieldValue("")
-                }
-            }) { Text("Agendar") } },
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            confirmButton = {
+                Button({
+                    if (espec.isNotEmpty()) {
+                        val nova = Consulta(tipo, espec, dataVal.text, horaVal.text)
+                        if (editandoConsulta != null) {
+                            val index = lista.indexOf(editandoConsulta)
+                            if (index != -1) lista[index] = nova
+                            historico.add(0, HistoricoEvento("Atualizado: $espec", obterDataHoraAtual(), Icons.Default.EditCalendar))
+                        } else {
+                            lista.add(nova)
+                            historico.add(0, HistoricoEvento("Agendado: $espec", obterDataHoraAtual(), Icons.Default.EventAvailable))
+                        }
+                        showDialog = false
+                    }
+                }) { Text("Confirmar") }
+            },
+            dismissButton = { TextButton({ showDialog = false }) { Text("Voltar") } },
             text = {
                 Column {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         RadioButton(tipo == "Consulta", { tipo = "Consulta" }); Text("Consulta")
                         RadioButton(tipo == "Exame", { tipo = "Exame" }); Text("Exame")
                     }
-                    OutlinedTextField(espec, { espec = it }, label = { Text("Especialidade (Ex: Geriatra)") })
-
-                    // MÁSCARA E VALIDAÇÃO DE DATA
+                    OutlinedTextField(espec, { espec = it }, label = { Text("Especialidade (Ex: Geriatra)") }, modifier = Modifier.fillMaxWidth())
                     OutlinedTextField(
                         value = dataVal,
                         onValueChange = { input ->
@@ -254,10 +376,9 @@ fun AgendaConsultasScreen(lista: MutableList<Consulta>, historico: MutableList<H
                             }
                         },
                         label = { Text("Data (DD/MM)") },
+                        modifier = Modifier.fillMaxWidth(),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                     )
-
-                    // MÁSCARA E VALIDAÇÃO DE HORA
                     OutlinedTextField(
                         value = horaVal,
                         onValueChange = { input ->
@@ -278,6 +399,7 @@ fun AgendaConsultasScreen(lista: MutableList<Consulta>, historico: MutableList<H
                             }
                         },
                         label = { Text("Hora (HH:mm)") },
+                        modifier = Modifier.fillMaxWidth(),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                     )
                 }
@@ -289,40 +411,74 @@ fun AgendaConsultasScreen(lista: MutableList<Consulta>, historico: MutableList<H
 @Composable
 fun ContatosEmergenciaScreen(lista: MutableList<ContatoEmergencia>, historico: MutableList<HistoricoEvento>) {
     var showDialog by remember { mutableStateOf(false) }
+    var editandoContato by remember { mutableStateOf<ContatoEmergencia?>(null) }
+
     var nome by remember { mutableStateOf("") }
     var telVal by remember { mutableStateOf(TextFieldValue("")) }
     var parent by remember { mutableStateOf("") }
 
+    LaunchedEffect(showDialog) {
+        if (showDialog) {
+            nome = editandoContato?.nome ?: ""
+            val t = editandoContato?.telefone ?: ""
+            telVal = TextFieldValue(t, TextRange(t.length))
+            parent = editandoContato?.parentesco ?: ""
+        }
+    }
+
     Column(Modifier.fillMaxSize().padding(16.dp)) {
         Text("Contatos", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
-        Button({ showDialog = true }, Modifier.fillMaxWidth().padding(vertical = 16.dp).height(50.dp), shape = RoundedCornerShape(12.dp)) { Text("ADICIONAR CONTATO") }
+        Button({
+            editandoContato = null
+            showDialog = true
+        }, Modifier.fillMaxWidth().padding(vertical = 16.dp).height(50.dp), shape = RoundedCornerShape(12.dp)) { Text("ADICIONAR CONTATO") }
         LazyColumn {
             items(lista) { contato ->
                 Card(Modifier.fillMaxWidth().padding(vertical = 4.dp), shape = RoundedCornerShape(12.dp)) {
                     ListItem(
                         headlineContent = { Text(contato.nome, fontWeight = FontWeight.Bold) },
                         supportingContent = { Text("${contato.parentesco} - ${contato.telefone}") },
-                        trailingContent = { IconButton({
-                            lista.remove(contato)
-                            historico.add(0, HistoricoEvento("Excluído: ${contato.nome}", obterDataHoraAtual(), Icons.Default.PersonRemove))
-                        }) { Icon(Icons.Default.Delete, null) } }
+                        trailingContent = {
+                            Row {
+                                IconButton({
+                                    editandoContato = contato
+                                    showDialog = true
+                                }) { Icon(Icons.Default.Edit, "Editar", tint = MaterialTheme.colorScheme.primary) }
+                                IconButton({
+                                    lista.remove(contato)
+                                    historico.add(0, HistoricoEvento("Excluído: ${contato.nome}", obterDataHoraAtual(), Icons.Default.PersonRemove))
+                                }) { Icon(Icons.Default.Delete, "Excluir") }
+                            }
+                        }
                     )
                 }
             }
         }
     }
+
     if (showDialog) {
-        AlertDialog(onDismissRequest = { showDialog = false },
-            confirmButton = { Button({
-                if (nome.isNotEmpty()) {
-                    lista.add(ContatoEmergencia(nome, telVal.text, parent))
-                    historico.add(0, HistoricoEvento("Salvo: $nome", obterDataHoraAtual(), Icons.Default.PersonAdd))
-                    showDialog = false; nome = ""; telVal = TextFieldValue(""); parent = ""
-                }
-            }) { Text("Adicionar") } },
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            confirmButton = {
+                Button({
+                    if (nome.isNotEmpty()) {
+                        val novo = ContatoEmergencia(nome, telVal.text, parent)
+                        if (editandoContato != null) {
+                            val index = lista.indexOf(editandoContato)
+                            if (index != -1) lista[index] = novo
+                            historico.add(0, HistoricoEvento("Editado: $nome", obterDataHoraAtual(), Icons.Default.ContactPage))
+                        } else {
+                            lista.add(novo)
+                            historico.add(0, HistoricoEvento("Salvo: $nome", obterDataHoraAtual(), Icons.Default.PersonAdd))
+                        }
+                        showDialog = false
+                    }
+                }) { Text("Salvar") }
+            },
+            dismissButton = { TextButton({ showDialog = false }) { Text("Cancelar") } },
             text = {
                 Column {
-                    OutlinedTextField(nome, { nome = it }, label = { Text("Nome Completo") })
+                    OutlinedTextField(nome, { nome = it }, label = { Text("Nome Completo") }, modifier = Modifier.fillMaxWidth())
                     OutlinedTextField(
                         value = telVal,
                         onValueChange = { input ->
@@ -339,9 +495,10 @@ fun ContatosEmergenciaScreen(lista: MutableList<ContatoEmergencia>, historico: M
                             }
                         },
                         label = { Text("Telefone (DDD + Número)") },
+                        modifier = Modifier.fillMaxWidth(),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
                     )
-                    OutlinedTextField(parent, { parent = it }, label = { Text("Parentesco (Ex: Avo)") })
+                    OutlinedTextField(parent, { parent = it }, label = { Text("Parentesco (Ex: Avo)") }, modifier = Modifier.fillMaxWidth())
                 }
             }
         )
@@ -353,8 +510,12 @@ fun HistoricoTimelineScreen(historico: List<HistoricoEvento>) {
     LazyColumn(Modifier.fillMaxSize().padding(16.dp)) {
         item { Text("Histórico", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(bottom = 16.dp)) }
         items(historico) { ev ->
-            ListItem(headlineContent = { Text(ev.titulo) }, supportingContent = { Text(ev.dataHora) }, leadingContent = { Icon(ev.icone, null, tint = Color(0xFF1976D2)) })
-            Divider()
+            ListItem(
+                headlineContent = { Text(ev.titulo) },
+                supportingContent = { Text(ev.dataHora) },
+                leadingContent = { Icon(ev.icone, null, tint = Color(0xFF1976D2)) }
+            )
+            HorizontalDivider()
         }
     }
 }

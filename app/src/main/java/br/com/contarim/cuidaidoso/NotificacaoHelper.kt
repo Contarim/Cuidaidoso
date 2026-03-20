@@ -14,7 +14,6 @@ class NotificacaoReceiver : BroadcastReceiver() {
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val channelId = "cuidaidoso_alerts"
 
-        // Removida a verificação redundante de versão, mantendo apenas a necessária para o Canal
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 channelId,
